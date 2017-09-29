@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="toolbar" type="id" />
+    <item name="toolbar_title" type="id" />
+    <item name="baidu_map_root_view" type="id" />
+    <item name="baidu_map_mapview" type="id" />
+</resources>

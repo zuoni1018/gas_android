@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.oldfeel.utils">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="21" />
+
+    <application android:allowBackup="true">
+
+        <activity
+            android:name="com.oldfeel.base.LookBigImage"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name="com.oldfeel.base.DialogActivity"
+            android:theme="@style/Base.Theme.AppCompat.Light.Dialog" />
+    </application>
+
+</manifest>

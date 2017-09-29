@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <TextView
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/back_blue"
+            android:drawablePadding="6dp"
+            android:gravity="center_vertical"
+            android:text="返回"
+            android:textColor="@color/text_blue" />
+
+        <TextView
+            android:id="@id/toolbar_title"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/pay_recording"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="充值记录"
+            android:textColor="@color/text_blue" />
+
+    </LinearLayout>
+
+    <include layout="@layout/divider" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="68dp"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/logo" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:layout_weight="1.0"
+                    android:text="燃气费"
+                    android:textColor="@color/text_color"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/setting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/shezhi" />
+
+            </LinearLayout>
+
+            <include layout="@layout/divider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="10dp">
+
+                <TextView
+                    android:id="@+id/user_num"
+                    style="@style/gas_info_ll"
+                    android:text="用户编号" />
+
+                <TextView
+                    android:id="@+id/user_name"
+                    style="@style/gas_info_ll"
+                    android:text="用户名称" />
+
+                <TextView
+                    android:id="@+id/user_adr"
+                    style="@style/gas_info_ll"
+                    android:text="用气地址" />
+
+                <LinearLayout
+                    android:id="@+id/gas_image_ll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        style="@style/gas_info_ll"
+                        android:text="本次抄表图片" />
+
+                    <ImageView
+                        android:id="@+id/gas_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/gas_money"
+                    style="@style/gas_info_ll"
+                    android:text="本期燃气消费量" />
+
+                <TextView
+                    android:id="@+id/gas_unit"
+                    style="@style/gas_info_ll"
+                    android:text="缴费单位" />
+
+                <Button
+                    android:id="@+id/btn_payment"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="32dp"
+                    android:layout_marginLeft="32dp"
+                    android:layout_marginRight="32dp"
+                    android:layout_marginTop="22dp"
+                    android:background="@drawable/default_btn_bg"
+                    android:text="读卡"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+            </LinearLayout>
+
+            <include layout="@layout/divider" />
+
+            <LinearLayout
+                android:id="@+id/du_ka_pay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="充值数量 : "
+                    android:textColor="@color/text_color" />
+
+                <EditText
+                    android:id="@+id/du_ka_pay_num"
+                    android:layout_width="80dp"
+                    android:layout_height="35dp"
+                    android:layout_marginLeft="4dp"
+                    android:background="@drawable/rectangle_bg_corners"
+                    android:inputType="number"
+                    android:padding="6dp"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:text="方"
+                    android:textColor="@color/text_color" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_weight="1.0" />
+
+                <ImageButton
+                    android:id="@+id/calculate"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:adjustViewBounds="true"
+                    android:background="@color/transparent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/jisuan" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/du_ka_recharge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="应缴金额 : "
+                    android:textColor="@color/text_color" />
+
+                <TextView
+                    android:id="@+id/du_ka_pay_money"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="80.00元"
+                    android:textColor="@color/red" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_weight="1.0" />
+
+                <ImageButton
+                    android:id="@+id/du_ka_pay_submit"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:adjustViewBounds="true"
+                    android:background="@color/transparent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/chongzhi" />
+            </LinearLayout>
+
+            <include layout="@layout/divider" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingBottom="20dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="20dp"
+                android:text="提示 : 充值期间请勿将IC卡拔出读卡器,请保持读卡器在手机 3 米范围内.如遇充值问题或需退款,请至营业厅办理."
+                android:textColor="@color/text_color" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

@@ -1,0 +1,51 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        applicationId "com.yuncommunity.gas"
+        minSdkVersion 15
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled = true
+    }
+    signingConfigs {
+        release {
+            storeFile file('../key.jks')
+            storePassword 'gas_android'
+            keyAlias 'gas_android'
+            keyPassword 'gas_android'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.release
+        }
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+    configurations {
+        all*.exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile project(':AndroidUtils')
+    compile files('src/main/jniLibs/pgyer_sdk_2.4.5.jar')
+    compile files('src/main/jniLibs/ksoap2-android-assembly-3.6.2-jar-with-dependencies.jar')
+    compile files('src/main/jniLibs/zxing.jar')
+    compile project(':zuoni-common')
+}

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <TextView
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/back_blue"
+            android:drawablePadding="6dp"
+            android:gravity="center_vertical"
+            android:text="返回"
+            android:textColor="@color/text_blue" />
+
+        <TextView
+            android:id="@id/toolbar_title"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:gravity="center"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/pay_recording"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="缴费记录"
+            android:textColor="@color/text_blue" />
+
+    </LinearLayout>
+
+    <include layout="@layout/divider" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="68dp"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/logo" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:layout_weight="1.0"
+                    android:text="燃气费"
+                    android:textColor="@color/text_color"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/setting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/shezhi" />
+
+            </LinearLayout>
+
+            <include layout="@layout/divider" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="10dp">
+
+                <TextView
+                    android:id="@+id/user_num"
+                    style="@style/gas_info_ll"
+                    android:text="用户编号" />
+
+                <TextView
+                    android:id="@+id/user_name"
+                    style="@style/gas_info_ll"
+                    android:text="用户名称" />
+
+                <TextView
+                    android:id="@+id/user_adr"
+                    style="@style/gas_info_ll"
+                    android:text="用气地址" />
+
+                <LinearLayout
+                    android:id="@+id/gas_image_ll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        style="@style/gas_info_ll"
+                        android:text="本次抄表图片" />
+
+                    <ImageView
+                        android:id="@+id/gas_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="24dp"
+                        android:layout_marginRight="24dp"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/gas_money"
+                    style="@style/gas_info_ll"
+                    android:text="本期燃气消费量" />
+
+                <TextView
+                    android:id="@+id/gas_unit"
+                    style="@style/gas_info_ll"
+                    android:text="缴费单位" />
+
+                <Button
+                    android:id="@+id/btn_payment"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="32dp"
+                    android:layout_marginLeft="32dp"
+                    android:layout_marginRight="32dp"
+                    android:layout_marginTop="22dp"
+                    android:background="@drawable/jiaofei" />
+
+                <TextView
+                    android:id="@+id/no_record"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="32dp"
+                    android:layout_marginLeft="32dp"
+                    android:layout_marginRight="32dp"
+                    android:layout_marginTop="22dp"
+                    android:gravity="center_horizontal"
+                    android:text="暂无欠费记录"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <include layout="@layout/divider" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="20dp"
+                android:text="提示 : 请在15天内缴纳燃气费,如已缴费或办理支付托收手续,敬请忽略.贵户当前用气处于第一档,剩余"
+                android:textColor="@color/text_color" />
+
+            <TextView
+                android:id="@+id/lv_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:paddingBottom="10dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="10dp"
+                android:text="查询阶梯使用量明细"
+                android:textColor="@color/text_blue" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
