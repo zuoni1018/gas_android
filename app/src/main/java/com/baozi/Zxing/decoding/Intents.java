@@ -104,13 +104,13 @@ public final class Intents {
 
   public static final class Encode {
     /**
-     * Send this intent to encode a piece of data as a QR code and display it full screen, so
+     * Send this intent to code a piece of data as a QR code and display it full screen, so
      * that another person can scan the barcode from your screen.
      */
     public static final String ACTION = "com.google.zxing.client.android.ENCODE";
 
     /**
-     * The data to encode. Use Intent.putExtra(DATA, data) where data is either a String or a
+     * The data to code. Use Intent.putExtra(DATA, data) where data is either a String or a
      * Bundle, depending on the type and format specified. Non-QR Code formats should
      * just use a String here. For QR Code, see Contents for details.
      */
@@ -181,7 +181,7 @@ public final class Intents {
 
   public static final class Share {
     /**
-     * Give the user a choice of items to encode as a barcode, then render it as a QR Code and
+     * Give the user a choice of items to code as a barcode, then render it as a QR Code and
      * display onscreen for a friend to scan with their phone.
      */
     public static final String ACTION = "com.google.zxing.client.android.SHARE";

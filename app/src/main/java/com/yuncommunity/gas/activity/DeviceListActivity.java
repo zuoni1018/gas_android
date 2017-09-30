@@ -98,7 +98,11 @@ public class DeviceListActivity extends AppCompatActivity {
                 mPairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
             }
             ViewGroup.LayoutParams params = pairedListView.getLayoutParams();
-            params.height = DensityUtil.dip2px(DeviceListActivity.this,60*pairedDevices.size());
+            if(pairedDevices.size()>3){
+                params.height = DensityUtil.dip2px(DeviceListActivity.this,60*3);
+            }else {
+                params.height = DensityUtil.dip2px(DeviceListActivity.this,60*pairedDevices.size());
+            }
             pairedListView.setLayoutParams(params);
 
         } else {

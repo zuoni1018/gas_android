@@ -1,28 +1,22 @@
 package com.yuncommunity.gas.activity;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.yuncommunity.gas.R;
-import com.yuncommunity.gas.activity.base.BaseTitleActivity;
-import com.yuncommunity.gas.bluetooth.BluetoothChatService;
+import com.yuncommunity.gas.activity.base.BLEBaseActivity;
+import com.yuncommunity.gas.callback.BluetoothListener;
 import com.zuoni.zuoni_common.utils.LogUtil;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static com.yuncommunity.gas.bluetooth.BluetoothChat.DEVICE_NAME;
 
 
 /**
@@ -30,7 +24,7 @@ import static com.yuncommunity.gas.bluetooth.BluetoothChat.DEVICE_NAME;
  * 杭天燃气抄表界面
  */
 
-public class CopyingActivity extends BaseTitleActivity {
+public class CopyingActivity extends BLEBaseActivity implements BluetoothListener {
     @Bind(R.id.btnCopyScan)
     ImageButton btnCopyScan;
     @Bind(R.id.tvDeviceState)
@@ -51,133 +45,50 @@ public class CopyingActivity extends BaseTitleActivity {
     private static final int DEVICE_STATE_CONNECTED = 2;//设备已经连接
 
     private int nowConnectState = 0;//当前设备连接状态
-    // 从BluetoothChatService处理程序发送的消息类型
-    public static final int MESSAGE_STATE_CHANGE = 1;
-    public static final int MESSAGE_READ = 2;
-    public static final int MESSAGE_WRITE = 3;
-    public static final int MESSAGE_DEVICE_NAME = 4;
-    public static final int MESSAGE_TOAST = 5;
-//
-//    // 从BluetoothChatService处理程序接收到的密钥名
-//    public static final String DEVICE_NAME = "device_name";
-//    private static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-
-    //蓝牙
-    private BluetoothAdapter mBluetoothAdapter;// 本地蓝牙适配器
-    private BluetoothChatService mChatService; // 蓝牙服务
-    private String mConnectedDeviceName;// 连接设备的名称
-
-
-    // 从BluetoothChatService处理程序获得信息返回
-    @SuppressLint("HandlerLeak")
-    private final Handler mHandler = new Handler() {
-
-        @SuppressLint("HandlerLeak")
-        @Override
-        public void handleMessage(Message msg) {
-
-            switch (msg.what) {
-                //蓝牙连接状态(改变的时候会收到这边的指令)
-                case MESSAGE_STATE_CHANGE:
-                    switch (msg.arg1) {
-                        case BluetoothChatService.STATE_CONNECTED:
-                            LogUtil.i("蓝牙设备", "蓝牙链接上了");
-                            setBluetoothState(DEVICE_STATE_CONNECTED);
-                            break;
-
-                        case BluetoothChatService.STATE_CONNECTING:
-                            LogUtil.i("蓝牙设备", "蓝牙正在连接...");
-                            setBluetoothState(DEVICE_STATE_CONNECTING);
-                            break;
-                        case BluetoothChatService.STATE_LISTEN:
-                        case BluetoothChatService.STATE_NONE:
-                            LogUtil.i("蓝牙设备", "蓝牙未连接...");
-                            setBluetoothState(DEVICE_STATE_NONE);
-                            break;
-                    }
-                    break;
-                case MESSAGE_READ:
-                    //收到蓝牙结果
-                    byte[] readBuf = (byte[]) msg.obj;
-                    // 构建一个字符串有效字节的缓冲区
-                    String readMessage = new String(readBuf, 0, msg.arg1);
-//                    LogUtil.i("蓝牙得到结果", readMessage);
-//                    readMessage(readMessage);
-
-                    break;
-
-                case MESSAGE_DEVICE_NAME:
-                    // 保存连接设备的名字
-                    mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
-                    LogUtil.i("连接闪"+mConnectedDeviceName);
-                    tvDeviceState.setText("已连接  :" + mConnectedDeviceName + "");
-                    break;
-
-
-            }
-        }
-    };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ButterKnife.bind(this);
         setTitle("蓝牙抄表");
+        bluetoothListener = this;
 
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();// 获取本地蓝牙适配器
-        if (mBluetoothAdapter == null) {
-            showToast("当前设备不支持蓝牙");
-            finish();//退出当前界面并不执行下面代码
-            return;
-        }
 
-        mChatService = new BluetoothChatService(this, mHandler);//蓝牙可用则开启一个蓝牙服务
+//        SendCommand sendCommand = new SendCommand();
+//        sendCommand.setCommandType(SendCommand.COMMAND_TYPE_VERIFICATION);
+//
+////        return getGou_mai_ci_shu()+getGou_mai_liang()+getZheng_bao_jing_liang()
+////                +getTou_zhi_liang()+getDa_liu_she_ding()+getFa_men_zi_jian();
+//        SendCommandWrite sendCommandWrite = new SendCommandWrite();
+////        sendCommandWrite.setWriteType(SendCommandWrite.WRITE_TYPE_CHARGING);
+//        sendCommandWrite.setWriteType(SendCommandWrite.WRITE_TYPE_METERING);
+//        //计量
+//        //0002 002000 05 01 01 17 ef 16
+//        sendCommandWrite.setGou_mai_ci_shu("0002");
+//        sendCommandWrite.setGou_mai_liang("002000");
+//        sendCommandWrite.setZheng_bao_jing_liang("05");
+//        sendCommandWrite.setTou_zhi_liang("01");
+//        sendCommandWrite.setDa_liu_she_ding("01");
+//        sendCommandWrite.setFa_men_zi_jian("17");
+//
+//        //计费
+////        return getGou_mai_ci_shu()+getChong_zhi_jing_e()+getDang_qian_jia_ge();
+//        // 0007 000000101000 00000117 f1 16
+//        sendCommandWrite.setGou_mai_ci_shu("0007");
+//        sendCommandWrite.setChong_zhi_jing_e("000000101000");
+//        sendCommandWrite.setDang_qian_jia_ge("00000117");
+//
+//        ProtocolICRead.code(sendCommand);
+
+//        ProtocolICRead.decode("68a101e1a148540368096e6bCS16");//身份验证
+//
+//        ProtocolICRead.decode("68a101e1a14854026806ffCS16");//写卡成功
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // 如果蓝牙没开启，则开启蓝牙.
-        // setupChat在onActivityResult()将被调用
-        if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-            // 否则，设置通信会话
-        } else {
-            if (mChatService == null)
-                // setupChat();
-                Toast.makeText(this, "开启蓝牙会话", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        mChatService.stop();
-        super.onDestroy();
-    }
 
     @Override
     protected int setLayout() {
         return R.layout.ht_activity_copying;
-    }
-
-    // 发送蓝牙消息
-    private void sendMessage(String message) {
-        if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
-            return;
-        }
-        //发送message
-        if (message.length() > 0) {
-            byte[] send = message.getBytes();
-            mChatService.write(send);
-        }
-    }
-
-    private void connectDevice(String address, boolean secure) {
-        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-        mChatService.connect(device);
     }
 
     /**
@@ -190,20 +101,12 @@ public class CopyingActivity extends BaseTitleActivity {
                 //获取一个蓝牙设备
                 if (resultCode == Activity.RESULT_OK) {
                     String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-
-                    connectDevice(address, true);//连接蓝牙设备
+                    connectDevice(address);//连接蓝牙设备
                 }
                 break;
-            case REQUEST_ENABLE_BT:
-                // 当请求启用蓝牙返回
-                if (resultCode == Activity.RESULT_OK) {
-                    showToast("蓝牙开启成功！");
-                } else {
-                    showToast("蓝牙未启用。程序退出");
-                    finish();
-                }
         }
     }
+
 
     @OnClick({R.id.btnCopyScan, R.id.btnCopyingRead, R.id.btnCopyingStop})
     public void onViewClicked(View view) {
@@ -232,21 +135,23 @@ public class CopyingActivity extends BaseTitleActivity {
         }
     }
 
-    /**
-     * 根据蓝牙链接状态设置对应的UI
-     */
-    private void setBluetoothState(int deviceState) {
-        nowConnectState = deviceState;
-        switch (deviceState) {
-            case DEVICE_STATE_NONE:
-                tvDeviceState.setText("蓝牙设备未连接");
-                break;
-            case DEVICE_STATE_CONNECTING:
-                tvDeviceState.setText("蓝牙设备正在连接...");
-                break;
-            case DEVICE_STATE_CONNECTED:
-                tvDeviceState.setText("已连接  :" + mConnectedDeviceName + "");
-                break;
-        }
+    @Override
+    public void connected() {
+        LogUtil.i("回调","连接上了");
+    }
+
+    @Override
+    public void disconnected() {
+        LogUtil.i("回调","没连上");
+    }
+
+    @Override
+    public void onServicesDiscovered(BluetoothGatt gatt, BluetoothGattCharacteristic bluetoothGattCharacteristic) {
+        LogUtil.i("回调","发现");
+    }
+
+    @Override
+    public void onCharacteristicWrite(String message) {
+        LogUtil.i("回调","写数据"+message);
     }
 }
