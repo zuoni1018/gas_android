@@ -40,7 +40,6 @@
             android:gravity="center"
             android:text="充值记录"
             android:textColor="@color/text_blue" />
-
     </LinearLayout>
 
     <include layout="@layout/divider" />
@@ -87,20 +86,6 @@
 
             <include layout="@layout/divider" />
 
-            <TextView
-                android:id="@+id/tvMessage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:textColor="@color/red"
-                android:textSize="14sp" />
-
-
-            <include layout="@layout/read_card_info" />
-
-            <include layout="@layout/ic_user_info" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -108,8 +93,7 @@
                 android:orientation="vertical"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                android:paddingTop="10dp"
-                android:visibility="gone">
+                android:paddingTop="10dp">
 
                 <TextView
                     android:id="@+id/user_num"
@@ -130,7 +114,8 @@
                     android:id="@+id/gas_image_ll"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                   >
 
                     <TextView
                         style="@style/gas_info_ll"
@@ -152,21 +137,20 @@
                     style="@style/gas_info_ll"
                     android:text="缴费单位" />
 
+                <Button
+                    android:id="@+id/btn_payment"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="32dp"
+                    android:layout_marginLeft="32dp"
+                    android:layout_marginRight="32dp"
+                    android:layout_marginTop="22dp"
+                    android:background="@drawable/default_btn_bg"
+                    android:text="读卡"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
 
             </LinearLayout>
-
-            <Button
-                android:id="@+id/btn_payment"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginBottom="5dp"
-                android:layout_marginLeft="32dp"
-                android:layout_marginRight="32dp"
-                android:layout_marginTop="22dp"
-                android:background="@drawable/default_btn_bg"
-                android:text="读卡"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
 
             <include layout="@layout/divider" />
 
@@ -178,7 +162,8 @@
                 android:background="@color/white"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="16dp">
+                android:padding="16dp"
+              >
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -229,7 +214,8 @@
                 android:orientation="horizontal"
                 android:paddingBottom="16dp"
                 android:paddingLeft="16dp"
-                android:paddingRight="16dp">
+                android:paddingRight="16dp"
+               >
 
                 <TextView
                     android:layout_width="wrap_content"

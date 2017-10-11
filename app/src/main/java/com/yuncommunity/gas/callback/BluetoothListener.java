@@ -15,5 +15,6 @@ public interface BluetoothListener {
 
     void onServicesDiscovered(BluetoothGatt gatt, BluetoothGattCharacteristic  bluetoothGattCharacteristic);//发现了服务
 
-    void onCharacteristicWrite(String message);
+
+    void onCharacteristicChanged(String message);
 }

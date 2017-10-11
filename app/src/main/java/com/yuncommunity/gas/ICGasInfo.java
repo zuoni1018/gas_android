@@ -1,13 +1,8 @@
 package com.yuncommunity.gas;
 
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,25 +11,30 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.oldfeel.utils.ETUtil;
-import com.oldfeel.utils.LogUtil;
 import com.yuncommunity.gas.activity.CopyingActivity;
 import com.yuncommunity.gas.base.MyActivity;
 import com.yuncommunity.gas.base.Net;
+import com.yuncommunity.gas.bean.gson.GetICUserList;
 import com.yuncommunity.gas.conf.JsonApi;
-import com.yuncommunity.gas.dialog.BTDiscovery;
 import com.yuncommunity.gas.dialog.NoWriteRecord;
+import com.yuncommunity.gas.protocol.GetCardInfoCommand;
 import com.yuncommunity.gas.utils.MyUtils;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
+import com.zuoni.zuoni_common.utils.LogUtil;
+import com.zuoni.zuoni_common.utils.ToastUtils;
 
 import org.ksoap2.serialization.SoapObject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.Call;
 
-/**
- * Created by oldfeel on 17-4-18.
- */
+import static com.yuncommunity.gas.utils.Xml2Json.xml2JSON;
+
 
 public class ICGasInfo extends MyActivity {
     private static final int REQUEST_ENABLE_BT = 124;
@@ -67,18 +67,74 @@ public class ICGasInfo extends MyActivity {
     EditText duKaPayNum;
     @Bind(R.id.calculate)
     ImageButton calculate;
+
+
     @Bind(R.id.du_ka_pay)
-    LinearLayout duKaPay;
+    LinearLayout duKaPay;//读卡
     @Bind(R.id.du_ka_pay_money)
     TextView duKaPayMoney;
     @Bind(R.id.du_ka_pay_submit)
     ImageButton duKaPaySubmit;
     @Bind(R.id.du_ka_recharge)
     LinearLayout duKaRecharge;
-    private String no;
+
+
+    @Bind(R.id.customerNo)
+    TextView customerNo;
+    @Bind(R.id.customerName)
+    TextView customerName;
+    @Bind(R.id.customerType)
+    TextView customerType;
+    @Bind(R.id.telNo)
+    TextView telNo;
+    @Bind(R.id.mobileNo)
+    TextView mobileNo;
+    @Bind(R.id.certNo)
+    TextView certNo;
+    @Bind(R.id.meterTypeNo)
+    TextView meterTypeNo;
+    @Bind(R.id.factoryNo)
+    TextView factoryNo;
+    @Bind(R.id.Address)
+    TextView Address;
+    @Bind(R.id.layoutIcUserInfo)
+    LinearLayout layoutIcUserInfo;
+
+
+    @Bind(R.id.info1)
+    TextView info1;
+    @Bind(R.id.info9)
+    TextView info9;
+    @Bind(R.id.info2)
+    TextView info2;
+    @Bind(R.id.info3)
+    TextView info3;
+    @Bind(R.id.info4)
+    TextView info4;
+    @Bind(R.id.info5)
+    TextView info5;
+    @Bind(R.id.info6)
+    TextView info6;
+    @Bind(R.id.info7)
+    TextView info7;
+    @Bind(R.id.info8)
+    TextView info8;
+    @Bind(R.id.layoutReadCardInfo)
+    LinearLayout layoutReadCardInfo;
+    @Bind(R.id.tvMessage)
+    TextView tvMessage;
+    @Bind(R.id.tvGetICUserList)
+    TextView tvGetICUserList;
+    @Bind(R.id.type)
+    TextView type;
+
+
+    //    private String no;
     private String money;
 
-    private BTDiscovery btDiscovery;
+
+    private boolean isGetmeterNo = false;//是否已近拿到表号
+    private String meterNo = "";//表号
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,45 +142,39 @@ public class ICGasInfo extends MyActivity {
         setContentView(R.layout.gas_info_duka);
         ButterKnife.bind(this);
         toolbarTitle.setText("XX燃气IC卡自助充值");
-        no = getIntent().getStringExtra("no");
 
-        Net net1 = new Net(this, JsonApi.GETICUSERLIST);
-        net1.setParams("meterNo", no);
-        net1.sendRequest("", new Net.Callback() {
-            @Override
-            public void success(SoapObject soapObject) {
-                soapObject = MyUtils.getSoapObject(soapObject, "UsersList");
-                if (soapObject != null) {
-                    userInfo.addNo(no);
-                    userNum.setText("用户编号 : " + getInfo("customerNo", soapObject));
-                    userName.setText("用户名称 : " + getInfo("customerName", soapObject));
-                    userAdr.setText("用户地址 : " + getInfo("address", soapObject));
-                } else {
-                    userNum.setText("用户编号 : 暂无数据");
-                    userName.setText("用户名称 : 暂无数据");
-                    userAdr.setText("用户地址 : 暂无数据");
-                }
-            }
-        });
+        initState();
+
+
+//        no = getIntent().getStringExtra("no");
+
 
         // 获取未写卡的充值记录
-        Net net2 = new Net(this, JsonApi.GetICRecord);
-        net2.setParams("meterNo", no);
-        net2.sendRequest("", new Net.Callback() {
-            @Override
-            public void success(SoapObject soapObject) {
-                soapObject = MyUtils.getSoapObject(soapObject, "ICChargeRecord");
-                if (soapObject != null) {
-                    showNoWriteRecord(soapObject);
-                }
-            }
-        });
+//        Net net2 = new Net(this, JsonApi.GetICRecord);
+//        net2.setParams("meterNo", "");
+//        net2.sendRequest("", new Net.Callback() {
+//            @Override
+//            public void success(SoapObject soapObject) {
+//                soapObject = MyUtils.getSoapObject(soapObject, "ICChargeRecord");
+//                if (soapObject != null) {
+//                    showNoWriteRecord(soapObject);
+//                }
+//            }
+//        });
 
-        gasMoney.setText(Html.fromHtml("卡内金额:<font color='#ee941a'>" + 1200
-                + "</font>&nbsp;&nbsp;卡内气量:<font color='#ee941a'>" + 512
-                + "</font>&nbsp;&nbsp;充值次数:<font color='#ee941a'>" + 6 + "</font>"));
+//        gasMoney.setText(Html.fromHtml("卡内金额:<font color='#ee941a'>" + 1200
+//                + "</font>&nbsp;&nbsp;卡内气量:<font color='#ee941a'>" + 512
+//                + "</font>&nbsp;&nbsp;充值次数:<font color='#ee941a'>" + 6 + "</font>"));
 
         ETUtil.hideSoftKeyboard(this);
+    }
+
+    private void initState() {
+        tvMessage.setText("请先通过蓝牙获取卡号，才可以进行充值及查询卡信息等操作");
+        layoutIcUserInfo.setVisibility(View.GONE);
+        layoutReadCardInfo.setVisibility(View.GONE);
+        duKaRecharge.setVisibility(View.GONE);
+        duKaPay.setVisibility(View.GONE);
     }
 
     private void showNoWriteRecord(SoapObject soapObject) {
@@ -141,38 +191,13 @@ public class ICGasInfo extends MyActivity {
 
     @OnClick(R.id.btn_payment)
     public void btnPayment() {
-//        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-//        if (mBluetoothAdapter == null) {
-//            showSimpleDialog("您的设备不支持蓝牙连接");
-//            return;
-//        }
-//
-//        if (!mBluetoothAdapter.isEnabled()) {
-//            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-//            return;
-//        }
-//
-//        btDiscovery = new BTDiscovery();
-//        btDiscovery.show(getSupportFragmentManager(), "bt_discovery");
-//
-//        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-//        // If there are paired devices
-//        if (pairedDevices.size() > 0) {
-//            // Loop through paired devices
-//            for (BluetoothDevice device : pairedDevices) {
-//                // Add the name and address to an array adapter to show in a ListView
-//                if (btDiscovery != null && btDiscovery.isAdded())
-//                    btDiscovery.add(device.getName() + "\n" + device.getAddress());
-//            }
-//        }
-//        mBluetoothAdapter.startDiscovery();
-
-        Intent mIntent=new Intent(ICGasInfo.this, CopyingActivity.class);
-        startActivity(mIntent);
-
-
+        Intent mIntent = new Intent(ICGasInfo.this, CopyingActivity.class);
+        mIntent.putExtra("isRead",true);
+        startActivityForResult(mIntent, COPY_REQUEST);
     }
+
+    public static int COPY_REQUEST = 10086;
+    public static int RESULT_CODE_COPY_CARD_INFO = 1000;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -196,40 +221,113 @@ public class ICGasInfo extends MyActivity {
             duKaRecharge.setVisibility(View.VISIBLE);
             calculate.setImageResource(R.drawable.cx_jisuan);
         }
+
+        if (requestCode == COPY_REQUEST) {
+            if (resultCode == RESULT_CODE_COPY_CARD_INFO) {
+
+                GetCardInfoCommand getCardInfoCommand = (GetCardInfoCommand) data.getSerializableExtra("GetCardInfoCommand");
+                meterNo = getCardInfoCommand.getInfo9();
+                LogUtil.i("拿到表号", meterNo);
+
+                info1.setText(getCardInfoCommand.getInfo1());
+                info2.setText(getCardInfoCommand.getInfo2());
+                info3.setText(getCardInfoCommand.getInfo3());
+                info4.setText(getCardInfoCommand.getInfo4());
+
+                info5.setText(getCardInfoCommand.getInfo5());
+                info6.setText(getCardInfoCommand.getInfo6());
+                info7.setText(getCardInfoCommand.getInfo7());
+                info8.setText(getCardInfoCommand.getInfo8());
+
+                info9.setText(getCardInfoCommand.getInfo9());
+                type.setText(getCardInfoCommand.getInfo10());
+
+                tvMessage.setText("获取取卡号成功!!!可以进行充值及查询卡信息");
+
+                layoutIcUserInfo.setVisibility(View.VISIBLE);
+                layoutReadCardInfo.setVisibility(View.VISIBLE);
+
+                duKaRecharge.setVisibility(View.VISIBLE);
+                duKaPay.setVisibility(View.VISIBLE);
+
+                //查询
+                GetICUserList(meterNo);
+                GetICRecord(meterNo);//这个干嘛
+            }
+
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    // Create a BroadcastReceiver for ACTION_FOUND
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            // When discovery finds a device
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                // Get the BluetoothDevice object from the Intent
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // Add the name and address to an array adapter to show in a ListView
-                LogUtil.showLog("xxxx"+"搜索到蓝牙设备"+device.getName());
-
-                if (btDiscovery != null && btDiscovery.isAdded()) {
-                    btDiscovery.add(device.getName() + "\n" + device.getAddress());
+    private void GetICRecord(String meterNo) {
+        Net net2 = new Net(this, JsonApi.GetICRecord);
+        net2.setParams("meterNo", meterNo);
+        net2.sendRequest("", new Net.Callback() {
+            @Override
+            public void success(SoapObject soapObject) {
+                soapObject = MyUtils.getSoapObject(soapObject, "ICChargeRecord");
+                if (soapObject != null) {
+                    showNoWriteRecord(soapObject);
                 }
             }
-        }
-    };
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Register the BroadcastReceiver
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
+        });
     }
 
-    @Override
-    protected void onDestroy() {
-        unregisterReceiver(mReceiver);
-        super.onDestroy();
+    /**
+     * <预付费>通过表计编号查询用户基本信息
+     */
+    private void GetICUserList(String meterNo) {
+        OkHttpUtils
+                .post()
+                .url(AppUrl.BASE_URL + JsonApi.GETICUSERLIST)
+                .addParams("meterNo", meterNo)
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        LogUtil.i("GetICUserList", e.toString());
+                    }
+
+                    @Override
+                    public void onResponse(String response, int id) {
+                        LogUtil.i("GetICUserList", response);
+                        LogUtil.i("GetICUserList2" + xml2JSON(response));
+                        Gson gson = new Gson();
+                        GetICUserList info = gson.fromJson(xml2JSON(response), GetICUserList.class);
+                        if (info.getArrayOfUsersList().getUsersList() != null) {
+
+                            ToastUtils.showToast(ICGasInfo.this, "查询卡信息成功");
+
+                            customerNo.setText(info.getArrayOfUsersList().getUsersList().getCustomerNo());
+                            customerName.setText(info.getArrayOfUsersList().getUsersList().getCustomerName());
+                            customerType.setText(info.getArrayOfUsersList().getUsersList().getCustomerType());
+                            telNo.setText(info.getArrayOfUsersList().getUsersList().getTelNo());
+
+                            mobileNo.setText(info.getArrayOfUsersList().getUsersList().getMobileNo());
+                            certNo.setText(info.getArrayOfUsersList().getUsersList().getCertNo());
+                            meterTypeNo.setText(info.getArrayOfUsersList().getUsersList().getMeterTypeNo());
+                            factoryNo.setText(info.getArrayOfUsersList().getUsersList().getFactoryNo());
+                            Address.setText(info.getArrayOfUsersList().getUsersList().getAddress());
+                        }else {
+                            ToastUtils.showToast(ICGasInfo.this, "查询卡信息失败");
+
+                            customerNo.setText("");
+                            customerName.setText("");
+                            customerType.setText("");
+                            telNo.setText("");
+
+                            mobileNo.setText("");
+                            certNo.setText("");
+                            meterTypeNo.setText("");
+                            factoryNo.setText("");
+                            Address.setText("");
+                        }
+
+                    }
+                });
     }
+
 
     @OnClick(R.id.btn_back)
     public void btnBack() {
@@ -239,14 +337,16 @@ public class ICGasInfo extends MyActivity {
     @OnClick(R.id.pay_recording)
     public void payRecording() {
         Intent intent = new Intent(this, ICPayRecording.class);
-        intent.putExtra("meterNo", no);
+        intent.putExtra("meterNo", meterNo);
         startActivity(intent);
     }
 
+
+    //计算金额
     @OnClick(R.id.calculate)
     public void calculate() {
         Intent intent = new Intent(this, ICLvInfo.class);
-        intent.putExtra("meterNo", no);
+        intent.putExtra("meterNo", "0000000001");
         intent.putExtra("num", duKaPayNum.getText().toString());
         startActivityForResult(intent, REQUEST_CALCULATE);
         calculate.setImageResource(R.drawable.cx_jisuan);
@@ -268,7 +368,7 @@ public class ICGasInfo extends MyActivity {
 //        });
 
         Intent intent = new Intent(this, Payment.class);
-        intent.putExtra("communicateNo", no);
+        intent.putExtra("communicateNo", meterNo);
         intent.putExtra("payableAmount", money);
         intent.putExtra("from", Payment.FROM_IC);
         startActivity(intent);
@@ -278,7 +378,10 @@ public class ICGasInfo extends MyActivity {
         duKaPay.setVisibility(View.VISIBLE);
     }
 
-    public void chooseDevice(){
 
+    @OnClick(R.id.tvGetICUserList)
+    public void onViewClicked() {
+        GetICUserList(meterNo);
     }
+
 }

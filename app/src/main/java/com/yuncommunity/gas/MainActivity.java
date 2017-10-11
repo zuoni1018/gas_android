@@ -242,7 +242,7 @@ public class MainActivity extends MyActivity {
 //            return;
 //        }
 //
-//        Net net1 = new Net(this, JsonApi.GETICUSERLIST);
+        Net net1 = new Net(this, JsonApi.GETICUSERLIST);
 //        net1.setParams("meterNo", communicateNo);
 //        net1.sendRequest("正在查询...", new Net.Callback() {
 //            @Override

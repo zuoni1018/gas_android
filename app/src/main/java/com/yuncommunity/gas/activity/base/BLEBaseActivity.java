@@ -11,6 +11,8 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import com.yuncommunity.gas.callback.BluetoothListener;
@@ -29,19 +31,102 @@ public abstract class BLEBaseActivity extends BaseTitleActivity {
     public BluetoothListener bluetoothListener;//这个需要初始化
     public BluetoothAdapter mBluetoothAdapter;
 
+    private final int GET_MESSAGE_TAG = 1000;
 
-    private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
+    private int nowState = BluetoothProfile.STATE_DISCONNECTED;
+
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case BluetoothProfile.STATE_CONNECTED:
+                    LogUtil.i(TAG, "蓝牙连接上了");//当设备连接上的时候
+                    bluetoothListener.connected();
+                    break;
+                case BluetoothProfile.STATE_DISCONNECTED:
+                    LogUtil.i(TAG, "蓝牙链接不上");
+                    bluetoothListener.disconnected();
+                    break;
+                case GET_MESSAGE_TAG:
+                    String message = (String) msg.obj;
+
+//                    if(!lastMessage.equals(message)){
+                    lastMessage = message;
+                    bluetoothListener.onCharacteristicChanged((String) msg.obj);
+//                    }
+                    break;
+            }
+        }
+    };
+
+    public boolean needDiscoverServices = true;
+
+
+    private BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+            LogUtil.i("当前蓝牙状态:" + newState + "原来蓝牙状态" + nowState);
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                LogUtil.i(TAG, "蓝牙连接上了");//当设备连接上的时候
-                bluetoothListener.connected();
-                gatt.discoverServices();
+                Message message = Message.obtain();
+                message.what = BluetoothProfile.STATE_CONNECTED;
+                handler.sendMessage(message);
+                if (needDiscoverServices) {
+                    LogUtil.i("当前蓝牙状态 搜索服务");
+                    gatt.discoverServices();
+                    needDiscoverServices = false;
+                }
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                LogUtil.i(TAG, "蓝牙链接不上");
-                bluetoothListener.disconnected();
+                Message message = Message.obtain();
+                message.what = BluetoothProfile.STATE_DISCONNECTED;
+                handler.sendMessage(message);
             }
+        }
+
+
+        @Override
+        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                LogUtil.i(TAG, "发现了服务");
+
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                List<BluetoothGattService> services = gatt.getServices();
+
+//                for (int i = 0; i < services.size(); i++) {
+//                    List<BluetoothGattCharacteristic> gcharacteristics = services.get(0).getCharacteristics();
+//                    for (int j = 0; j < gcharacteristics.size(); j++) {
+//                        BluetoothGattCharacteristic bluetoothGattCharacteristic = gcharacteristics.get(j);
+//                        UUID uuid = bluetoothGattCharacteristic.getUuid();
+//                        LogUtil.i(TAG, uuid.toString());
+//                    }
+//                }
+                //可以得到3个UUID
+                //49535343-1e4d-4bd9-ba61-23c647249616  接收
+                //49535343-8841-43f4-a8d4-ecbe34729bb3  上传
+                //49535343-6daa-4d02-abf6-19569aca69fe  没用
+
+
+                List<BluetoothGattCharacteristic> gcharacteristics = services.get(0).getCharacteristics();
+//                LogUtil.i(TAG, "特征数量" + gcharacteristics.size());
+                BluetoothGattCharacteristic bluetoothGattCharacteristic = gcharacteristics.get(1);//发送特征
+//                gatt.readCharacteristic( gcharacteristics.get(0));
+                gatt.setCharacteristicNotification(gcharacteristics.get(0), true);//接收特征
+//                gatt.setCharacteristicNotification(gcharacteristics.get(1),true);
+//                gatt.setCharacteristicNotification(gcharacteristics.get(2),true);
+//                gatt.readCharacteristic(gcharacteristics.get(0));
+//                gatt.readCharacteristic(gcharacteristics.get(1));
+//                gatt.readCharacteristic(gcharacteristics.get(2));
+
+
+                bluetoothListener.onServicesDiscovered(gatt, bluetoothGattCharacteristic);
+            }
+
         }
 
         public byte[] hexStringToByte(String hex) {
@@ -58,37 +143,6 @@ public abstract class BLEBaseActivity extends BaseTitleActivity {
         private byte toByte(char c) {
             byte b = (byte) "0123456789ABCDEF".indexOf(c);
             return b;
-        }
-
-        @Override
-        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                LogUtil.i(TAG, "发现了服务");
-//                initCharacteristic();
-                try {
-                    Thread.sleep(200);//延迟发送，否则第一次消息会不成功
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-//                final String uuid = "00002902-0000-1000-8000-00805f9b34fb";
-//                BluetoothGattService service=  gatt.getService(UUID.fromString(uuid));
-                List<BluetoothGattService> services = gatt.getServices();
-//
-                LogUtil.i(TAG, "服务数量" + services.size());
-//                BluetoothGattCharacteristic bluetoothGattCharacteristic=   service.getCharacteristic(UUID.fromString(uuid));
-                List<BluetoothGattCharacteristic> gcharacteristics = services.get(0).getCharacteristics();
-//
-                LogUtil.i(TAG, "特征数量" + gcharacteristics.size());
-                BluetoothGattCharacteristic bluetoothGattCharacteristic = gcharacteristics.get(1);
-                bluetoothGattCharacteristic.getProperties();
-                bluetoothGattCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
-                bluetoothGattCharacteristic.setValue(hexStringToByte("68a110a1e148540368096b6e8416"));
-                bluetoothListener.onServicesDiscovered(gatt, bluetoothGattCharacteristic);
-                gatt.writeCharacteristic(bluetoothGattCharacteristic);
-
-            }
-
         }
 
         public String bytesToHexString(byte[] src) {
@@ -114,8 +168,6 @@ public abstract class BLEBaseActivity extends BaseTitleActivity {
             byte[] bytes = characteristic.getValue();
             String str = bytesToHexString(bytes);
             Log.i(TAG, "onCharacteristicWrite status: " + str);
-            bluetoothListener.onCharacteristicWrite(str);
-
 
         }
 
@@ -134,15 +186,23 @@ public abstract class BLEBaseActivity extends BaseTitleActivity {
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             Log.e(TAG, "onCharacteristicRead status: " + status);
+//            characteristic.
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            Log.e(TAG, "gcharacteristics characteristic: " + characteristic);
-//            readCharacteristic(characteristic);
+
+            byte[] bytes = characteristic.getValue();
+            String str = bytesToHexString(bytes);
+            LogUtil.i("onCharacteristicChanged====" + str);
+            Message message = Message.obtain();
+            message.what = GET_MESSAGE_TAG;
+            message.obj = str;
+            handler.sendMessage(message);
         }
     };
 
+    private String lastMessage = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,6 +225,12 @@ public abstract class BLEBaseActivity extends BaseTitleActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+//        mBluetoothAdapter.
+    }
+
     /**
      * 连接蓝牙设备
      */
@@ -172,10 +238,5 @@ public abstract class BLEBaseActivity extends BaseTitleActivity {
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);//address是mac字符串
         device.connectGatt(getContext(), false, mGattCallback);
     }
-
-
-
-
-
 
 }

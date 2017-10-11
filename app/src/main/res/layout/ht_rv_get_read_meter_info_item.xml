@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="5dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg01"
+        android:orientation="vertical"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp">
+
+        <LinearLayout
+            android:id="@+id/layoutMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="充值流水号:" />
+
+                <TextView
+                    android:id="@+id/tvCommunicateNo"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="发生时间" />
+
+                <TextView
+                    android:id="@+id/tvReadState"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.8"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+
+                <ImageView
+                    android:id="@+id/ivCheck"
+                    android:layout_width="0dp"
+                    android:layout_height="20dp"
+                    android:layout_weight="0.2" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="客户编号:" />
+
+                <TextView
+                    android:id="@+id/tvImageName"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="表计编号" />
+
+                <TextView
+                    android:id="@+id/tvCollectorNo"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+
+                    style="@style/rv_item_style_01"
+                    android:text="表计类型编号:" />
+
+                <TextView
+                    android:id="@+id/tvOperater"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="表计厂家编号:" />
+
+                <TextView
+                    android:id="@+id/tvReadTime"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="流质编号:" />
+
+                <TextView
+                    android:id="@+id/tvDevState"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="充值数量:" />
+
+                <TextView
+                    android:id="@+id/tvDevPower"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/color_line" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/layoutOther"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="充值金额:" />
+
+                <TextView
+                    android:id="@+id/tvOcrRead"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="充值数量累计:" />
+
+                <TextView
+                    android:id="@+id/tvOcrState"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="充值金额累计:" />
+
+                <TextView
+                    android:id="@+id/tvThisRead"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="充值次数:" />
+
+                <TextView
+                    android:id="@+id/tvOcrResult"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="充值模式:" />
+
+                <TextView
+                    android:id="@+id/tvOcrTime"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="充值营业点编号:" />
+
+                <TextView
+                    android:id="@+id/tvcreateTime"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="充值终端编号:" />
+
+                <TextView
+                    android:id="@+id/tvReadType"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="充值操作员:" />
+
+                <TextView
+                    android:id="@+id/tvKPXD"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="IC卡写入标志:" />
+
+                <TextView
+                    android:id="@+id/tvKPYZ"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="收款明细单流水号:" />
+
+                <TextView
+                    android:id="@+id/tvFSQD"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="chargeCheck:" />
+
+                <TextView
+                    android:id="@+id/tvJSQD"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="cycleVolume  :" />
+
+                <TextView
+                    android:id="@+id/tvDJRQ"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="周期内累计金额:" />
+
+                <TextView
+                    android:id="@+id/tvPCH"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+
+                <TextView
+                    style="@style/rv_item_style_01"
+                    android:text="接收强度:"
+                    android:visibility="invisible" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/color_line" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvMore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:text="展开详情"
+            android:textColor="@color/black" />
+    </LinearLayout>
+</LinearLayout>

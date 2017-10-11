@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/user_num"
+        style="@style/gas_info_ll"
+        android:text="用户编号" />
+
+    <TextView
+        android:id="@+id/user_name"
+        style="@style/gas_info_ll"
+        android:text="用户名称" />
+
+    <TextView
+        android:id="@+id/user_adr"
+        style="@style/gas_info_ll"
+        android:text="用气地址" />
+
+    <LinearLayout
+        android:id="@+id/gas_image_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/gas_info_ll"
+            android:text="本次抄表图片" />
+
+        <ImageView
+            android:id="@+id/gas_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/gas_money"
+        style="@style/gas_info_ll"
+        android:text="本期燃气消费量" />
+
+    <TextView
+        android:id="@+id/gas_unit"
+        style="@style/gas_info_ll"
+        android:text="缴费单位" />
+
+
+</LinearLayout>

@@ -68,6 +68,10 @@ public class ProtocolICRead {
      * 解码
      * 身份验证
      * 68 a1 01 e1 a1 48 54 03 68 09 6e 6b CS 16
+     * 查询卡信息
+     * 68 a1 01 e1 a1 48 54 17680110010000000005000200330000000000000000000000f316
+     * <p>
+     * <p>
      * 68:起始符  (固定)
      * a1:系统标识 (固定)
      * 10:地址启用标识 (固定)
@@ -80,31 +84,133 @@ public class ProtocolICRead {
      * 6e 6b:数据
      * CS:校验域 累加和校验
      * 16:结束符 (固定)
-     *
-     *
-     * */
+     */
     public static GetCommand decode(String message) {
         //前面 18位没用
         //前面14位为 68 a1 01 e1 a1 48 54 //前去判断
         //取中间的数据域
 
-        String start=message.substring(0,14);
-        if(!start.toLowerCase().equals("68a101e1a14854")){
+        String start = message.substring(0, 14);
+        if (!start.toLowerCase().equals("68a101e1a14854")) {
             return null;
-        }else {
+        } else {
             //开始解码
-            String dataDomain=message.substring(18,message.length()-4);
-            LogUtil.i("编码 数据域:" + dataDomain);
+            String dataDomain = message.substring(18, message.length() - 4);
+            LogUtil.i("解码 数据域:" + dataDomain);
             //前2位是 命令类型
-            String commandType=dataDomain.substring(0,2);
-            String data=dataDomain.substring(2,dataDomain.length());
+            String commandType = dataDomain.substring(0, 2);
+            LogUtil.i("解码 命令类型:" + commandType);
+            String data = dataDomain.substring(2, dataDomain.length());
+            LogUtil.i("解码 数据:" + data);
 
-            GetCommand getCommand=new GetCommand();
+            if (commandType.equals("01")) {
+                //读卡
+//                01 10010000000005 00020033 000000 000000 0000 00 00 00
+
+                GetCardInfoCommand getCardInfoCommand=new GetCardInfoCommand();
+
+                //区域号+表号 共7位，计费表为8位
+                if (data.length() == "10010000000005000200330000000000000000000000".length()) {
+                    //计量表
+                    String info1 = data.substring(0, 14);//获取区域号+表号
+                    String info2 = data.substring(14, 22);//卡识别，卡类型，表类型，卡状态
+                    String info3 = data.substring(22, 28);//累计量
+                    String info4 = data.substring(28, 34);//剩余量
+                    String info5 = data.substring(34, 38);//购买次数
+                    String info6 = data.substring(38, 40);//磁攻击
+                    String info7 = data.substring(40, 42);//卡座攻击
+                    String info8 = data.substring(42, 44);//表具状态
+                    String info9 = data.substring(6, 14);//卡号
+                    LogUtil.i("解码 读卡"
+                            +"区域号+表号:"+info1
+                            +"卡号"+info9
+                            +"\n卡识别，卡类型，表类型，卡状态" +info2
+                            +"\n累计量"+info3
+                            +"\n剩余量"+info4
+                            +"\n购买次数"+info5
+                            +"\n磁攻击"+info6
+                            +"\n卡座攻击"+info7
+                            +"\n表具状态"+info8);
+
+                    getCardInfoCommand.setInfo1(info1);
+                    getCardInfoCommand.setInfo2(info2);
+                    getCardInfoCommand.setInfo3(info3);
+                    getCardInfoCommand.setInfo4(info4);
+
+                    getCardInfoCommand.setInfo5(info5);
+                    getCardInfoCommand.setInfo6(info6);
+                    getCardInfoCommand.setInfo7(info7);
+                    getCardInfoCommand.setInfo8(info8);
+                    getCardInfoCommand.setInfo9("00"+info9);
+                    getCardInfoCommand.setInfo10("计量卡");
+
+
+                    getCardInfoCommand.setCommandType(GetCommand.COMMAND_TYPE_QUERY);
+
+                    return  getCardInfoCommand;
+
+                } else if (data.length() == "1001000000000005000200330000000000000000000000".length()) {
+                    //计费表
+                    String info1 = data.substring(0, 14 + 2);//获取区域号+表号
+                    String info2 = data.substring(14 + 2, 22 + 2);//卡识别，卡类型，表类型，卡状态
+                    String info3 = data.substring(22 + 2, 28 + 2);//累计量
+                    String info4 = data.substring(28 + 2, 34 + 2);//剩余量
+                    String info5 = data.substring(34 + 2, 38 + 2);//购买次数
+                    String info6 = data.substring(38 + 2, 40 + 2);//磁攻击
+                    String info7 = data.substring(40 + 2, 42 + 2);//卡座攻击
+                    String info8 = data.substring(42 + 2, 44 + 2);//表具状态
+                    String info9 = data.substring(6, 14+2);//卡号
+
+                    LogUtil.i("解码 读卡"
+                            +"区域号+表号:"+info1
+                            +"\n卡识别，卡类型，表类型，卡状态" +info2
+                            +"\n累计量"+info3
+                            +"\n剩余量"+info4
+                            +"\n购买次数"+info5
+                            +"\n磁攻击"+info6
+                            +"\n卡座攻击"+info7
+                            +"\n表具状态"+info8);
+                    getCardInfoCommand.setCommandType(GetCommand.COMMAND_TYPE_QUERY);
+                    getCardInfoCommand.setInfo1(info1);
+                    getCardInfoCommand.setInfo2(info2);
+                    getCardInfoCommand.setInfo3(info3);
+                    getCardInfoCommand.setInfo4(info4);
+
+                    getCardInfoCommand.setInfo5(info5);
+                    getCardInfoCommand.setInfo6(info6);
+                    getCardInfoCommand.setInfo7(info7);
+                    getCardInfoCommand.setInfo8(info8);
+                    getCardInfoCommand.setInfo9(info9);
+                    getCardInfoCommand.setInfo10("计费卡");
+                    return  getCardInfoCommand;
+                }
+
+
+            }else if(commandType.equals("06")){
+                //修改表号
+                //data
+                ChangeCommand changeCommand=new ChangeCommand();
+                changeCommand.setCommandType(GetCommand.COMMAND_TYPE_WRITE);
+
+                if(data.toLowerCase().equals("ff")){
+                    changeCommand.setSuccessfull(true);
+                }else {
+                    changeCommand.setSuccessfull(false);
+                }
+
+                return changeCommand;
+
+            }
+
+
+
+//            GetCommand getCommand=new GetCommand();
+//            getCommand.setCommandType(commandType);
 
         }
 
 
-        return null;
+        return new GetCommand();
     }
 
 }

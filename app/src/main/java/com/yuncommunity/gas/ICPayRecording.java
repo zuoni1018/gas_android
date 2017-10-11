@@ -12,6 +12,7 @@ import butterknife.OnClick;
 
 /**
  * Created by oldfeel on 17-5-10.
+ * GetICRecord
  */
 
 public class ICPayRecording extends MyActivity {

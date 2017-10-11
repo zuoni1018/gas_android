@@ -9,9 +9,14 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.yuncommunity.gas.ICGasInfo;
 import com.yuncommunity.gas.R;
 import com.yuncommunity.gas.activity.base.BLEBaseActivity;
 import com.yuncommunity.gas.callback.BluetoothListener;
+import com.yuncommunity.gas.protocol.ChangeCommand;
+import com.yuncommunity.gas.protocol.GetCardInfoCommand;
+import com.yuncommunity.gas.protocol.GetCommand;
+import com.yuncommunity.gas.protocol.ProtocolICRead;
 import com.zuoni.zuoni_common.utils.LogUtil;
 
 import butterknife.Bind;
@@ -46,6 +51,8 @@ public class CopyingActivity extends BLEBaseActivity implements BluetoothListene
 
     private int nowConnectState = 0;//当前设备连接状态
 
+    private boolean isRead = true;//是否为读卡
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,36 +60,8 @@ public class CopyingActivity extends BLEBaseActivity implements BluetoothListene
         setTitle("蓝牙抄表");
         bluetoothListener = this;
 
+        isRead = getIntent().getBooleanExtra("isRead", true);
 
-//        SendCommand sendCommand = new SendCommand();
-//        sendCommand.setCommandType(SendCommand.COMMAND_TYPE_VERIFICATION);
-//
-////        return getGou_mai_ci_shu()+getGou_mai_liang()+getZheng_bao_jing_liang()
-////                +getTou_zhi_liang()+getDa_liu_she_ding()+getFa_men_zi_jian();
-//        SendCommandWrite sendCommandWrite = new SendCommandWrite();
-////        sendCommandWrite.setWriteType(SendCommandWrite.WRITE_TYPE_CHARGING);
-//        sendCommandWrite.setWriteType(SendCommandWrite.WRITE_TYPE_METERING);
-//        //计量
-//        //0002 002000 05 01 01 17 ef 16
-//        sendCommandWrite.setGou_mai_ci_shu("0002");
-//        sendCommandWrite.setGou_mai_liang("002000");
-//        sendCommandWrite.setZheng_bao_jing_liang("05");
-//        sendCommandWrite.setTou_zhi_liang("01");
-//        sendCommandWrite.setDa_liu_she_ding("01");
-//        sendCommandWrite.setFa_men_zi_jian("17");
-//
-//        //计费
-////        return getGou_mai_ci_shu()+getChong_zhi_jing_e()+getDang_qian_jia_ge();
-//        // 0007 000000101000 00000117 f1 16
-//        sendCommandWrite.setGou_mai_ci_shu("0007");
-//        sendCommandWrite.setChong_zhi_jing_e("000000101000");
-//        sendCommandWrite.setDang_qian_jia_ge("00000117");
-//
-//        ProtocolICRead.code(sendCommand);
-
-//        ProtocolICRead.decode("68a101e1a148540368096e6bCS16");//身份验证
-//
-//        ProtocolICRead.decode("68a101e1a14854026806ffCS16");//写卡成功
     }
 
 
@@ -101,6 +80,7 @@ public class CopyingActivity extends BLEBaseActivity implements BluetoothListene
                 //获取一个蓝牙设备
                 if (resultCode == Activity.RESULT_OK) {
                     String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+                    LogUtil.i("zzz", address);
                     connectDevice(address);//连接蓝牙设备
                 }
                 break;
@@ -116,6 +96,11 @@ public class CopyingActivity extends BLEBaseActivity implements BluetoothListene
                 if (nowConnectState == DEVICE_STATE_CONNECTED) {
                     showToast("蓝牙设备已连接");
                 } else {
+                    needDiscoverServices = true;
+                    //把上次的关了
+                    if (bluetoothGatt != null) {
+                        bluetoothGatt.close();
+                    }
                     Intent intent = new Intent(getContext(), DeviceListActivity.class);
                     startActivityForResult(intent, REQUEST_CONNECT_DEVICE);
                 }
@@ -137,21 +122,152 @@ public class CopyingActivity extends BLEBaseActivity implements BluetoothListene
 
     @Override
     public void connected() {
-        LogUtil.i("回调","连接上了");
+        LogUtil.i("回调", "连接上了");
+        tvDeviceState.setText("连接成功");
+        nowConnectState = DEVICE_STATE_CONNECTED;
     }
 
     @Override
     public void disconnected() {
-        LogUtil.i("回调","没连上");
+        LogUtil.i("回调", "没连上");
+        tvDeviceState.setText("设备未连接");
+        nowConnectState = DEVICE_STATE_NONE;
     }
+
+    private BluetoothGatt bluetoothGatt;
+    private BluetoothGattCharacteristic bluetoothGattCharacteristic;
 
     @Override
     public void onServicesDiscovered(BluetoothGatt gatt, BluetoothGattCharacteristic bluetoothGattCharacteristic) {
-        LogUtil.i("回调","发现");
+//        LogUtil.i("回调", "发现");
+        //发现蓝牙设备先把蓝牙设备保存下来
+        //身份验证
+        bluetoothGattCharacteristic.getProperties();
+        bluetoothGattCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
+        bluetoothGattCharacteristic.setValue(hexStringToByte("68a110a1e148540368096b6e8416".toUpperCase()));
+        LogUtil.i("发送蓝牙命令" + "68a110a1e148540368096b6e8416");
+        gatt.writeCharacteristic(bluetoothGattCharacteristic);
+
+        bluetoothGatt = gatt;
+        this.bluetoothGattCharacteristic = bluetoothGattCharacteristic;
     }
 
     @Override
-    public void onCharacteristicWrite(String message) {
-        LogUtil.i("回调","写数据"+message);
+    protected void onDestroy() {
+        if (bluetoothGatt != null) {
+            bluetoothGatt.disconnect();
+            bluetoothGatt.close();
+        }
+        super.onDestroy();
+    }
+
+    private String nowMessage = "";
+
+    @Override
+    public void onCharacteristicChanged(String message) {
+        LogUtil.i("回调收到数据:" + message);
+        if (isAuthentication(message.toLowerCase())) {
+            tvMessage.setText(tvMessage.getText().toString().trim() + "\n身份验证成功   !!!");
+            //进行下一步骤
+            tvMessage.setText(tvMessage.getText().toString().trim() + "\n正在查询卡片内容请稍后...");
+
+            tvMessage.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //查询卡信息
+                    if (isRead) {
+                        bluetoothGattCharacteristic.getProperties();
+                        bluetoothGattCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
+                        bluetoothGattCharacteristic.setValue(hexStringToByte("68a110a1e14854026801ffa116".toUpperCase()));
+                        bluetoothGatt.writeCharacteristic(bluetoothGattCharacteristic);
+                    } else {
+                        //修改卡信息
+                        bluetoothGattCharacteristic.getProperties();
+                        bluetoothGattCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
+                        bluetoothGattCharacteristic.setValue(hexStringToByte("68a110a1e148540a6806000200200005010117ef16".toUpperCase()));
+                        bluetoothGatt.writeCharacteristic(bluetoothGattCharacteristic);
+                    }
+                }
+            }, 200);
+
+        } else {
+            tvMessage.setText(tvMessage.getText().toString().trim() + "\n收到消息:" + "\n" + message);
+            //判断是不是我要的命令
+            nowMessage = nowMessage + message;
+            if (isMyNeedMessage(nowMessage.toLowerCase())) {
+                LogUtil.i("是我要的命令" + nowMessage);
+
+                GetCommand getCommand = ProtocolICRead.decode(nowMessage);
+
+                if (getCommand.getCommandType().equals(GetCommand.COMMAND_TYPE_QUERY)) {
+                    final GetCardInfoCommand getCardInfoCommand = (GetCardInfoCommand) getCommand;
+                    tvMessage.setText(tvMessage.getText().toString().trim() + "\n" + getCardInfoCommand.getResult());
+
+                    tvMessage.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent intent = new Intent();
+                            Bundle mBundle = new Bundle();
+                            mBundle.putSerializable("GetCardInfoCommand", getCardInfoCommand);
+                            intent.putExtras(mBundle);
+                            setResult(ICGasInfo.RESULT_CODE_COPY_CARD_INFO, intent);
+                            finish();
+                        }
+                    }, 200);
+
+                } else if (getCommand.getCommandType().equals(GetCommand.COMMAND_TYPE_WRITE)) {
+                    ChangeCommand changeCommand = (ChangeCommand) getCommand;
+                    if (changeCommand.isSuccessfull()) {
+                        showToast("写卡成功");
+                    } else {
+                        showToast("写卡失败");
+                    }
+                }
+
+                //解析协议
+                nowMessage = "";
+            }
+
+        }
+    }
+
+    private boolean isMyNeedMessage(String nowMessage) {
+        if (nowMessage.substring(0, "68a101e1a14854".length()).equals("68a101e1a14854")) {
+            if (nowMessage.substring(nowMessage.length() - 2, nowMessage.length()).equals("16")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 是否为身份验证
+     */
+    private boolean isAuthentication(String message) {
+        if (message.length() == "68a101e1a148540368096e6b7516".length()) {
+            if (message.substring(0, "68a101e1a14854036809".length()).equals("68a101e1a14854036809")) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public byte[] hexStringToByte(String hex) {
+        int len = (hex.length() / 2);
+        byte[] result = new byte[len];
+        char[] achar = hex.toCharArray();
+        for (int i = 0; i < len; i++) {
+            int pos = i * 2;
+            result[i] = (byte) (toByte(achar[pos]) << 4 | toByte(achar[pos + 1]));
+        }
+        return result;
+    }
+
+    private byte toByte(char c) {
+        byte b = (byte) "0123456789ABCDEF".indexOf(c);
+        return b;
     }
 }

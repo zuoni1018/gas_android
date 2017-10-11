@@ -20,9 +20,7 @@ import java.util.Random;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-/**
- * Created by mini on 2017/4/9.
- */
+
 
 public class ReaderResult extends MyActivity {
     @Bind(R.id.image)
@@ -62,6 +60,7 @@ public class ReaderResult extends MyActivity {
         }, 3 * 1000);
 
         String id = getIntent().getStringExtra("id");
+
         if (!StringUtil.isEmpty(id)) { // 从未写卡的充值记录过来的写卡
             Net net = new Net(this, JsonApi.ChangeICRecord);
             net.setParams("Id", id);
